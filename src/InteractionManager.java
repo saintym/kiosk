@@ -1,7 +1,6 @@
 import menu.data.Menu;
 import menu.data.MenuItem;
 
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,23 +11,23 @@ import static java.lang.System.in;
 public class InteractionManager {
     private final Scanner scanner = new Scanner(in);
 
-    public void showError(){
+    public void showError() {
         System.out.println("잘못된 명령입니다. 다시 입력하여 주십시오.\n");
     }
 
     public void showMessage(String message) {
-        System.out.println(message + "\n");
+        System.out.println(message);
     }
 
     public int read() {
         try {
             var userSelected = Integer.parseInt(scanner.nextLine());
-            if(userSelected == 0)
+            if (userSelected == 0)
                 return 0;
-            else if(userSelected < 0)
+            else if (userSelected < 0)
                 return -1;
             else return userSelected;
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return -1;
         }
     }
@@ -40,21 +39,44 @@ public class InteractionManager {
         System.out.println(title + menuInfo + exitMenu);
     }
 
-    public void showOrderDoneMessage(int price){
+    public void showDiscountSelectMessage() {
+        System.out.println("할인 정보를 입력해주세요\n");
+
+        for (int i = 0; i < DISCOUNT.values().length; i++) {
+            DISCOUNT discount = DISCOUNT.values()[i];
+            var name = discount.name();
+            var discountRate = (int) (discount.getDiscountRate() * 100);
+            System.out.println(i + ". " + name + " : " + discountRate + "%");
+        }
+    }
+
+    public void showOrderDoneMessage(int price) {
         System.out.println("\n주문이 완료되었습니다. 금액은 W " + price + " 입니다.\n");
     }
 
-    public void showMenuItemInCart(Cart cart){
+    public void showMenuItemInCart(Cart cart) {
         var title = "아래와 같이 주문하시겠습니까?\n\n [ ORDERS ]\n";
-        var orderedItems = "";
-        for(var item : cart.getItems()){
-            orderedItems = orderedItems + Parser.parseMenuitemToString(item);
-        }
-        var priceTitle = " [ TOTAL ]\n";
+        var orderedItemsString = new StringBuilder(title);
 
-        var orderMenu = "\n\n1. 주문\t2. 메뉴판";
+        final int[] index = {1};
 
-        System.out.println(title + orderedItems + priceTitle + "W " + cart.getAllPrice() + orderMenu);
+        cart.getItems().forEach((name, count) -> {
+            orderedItemsString.append(index[0])
+                    .append(". ")
+                    .append(name)
+                    .append(" : ")
+                    .append(count)
+                    .append(" 개\n");
+            index[0]++;
+        });
+
+        var priceTitle = "\n [ TOTAL ]\n W ";
+        var orderMenu = "\n\n1. 주문\n2. 메뉴 취소\n3. 메뉴판";
+        orderedItemsString.append(priceTitle)
+                .append(cart.calculateTotal())
+                .append(orderMenu);
+
+        System.out.println(orderedItemsString);
     }
 
     public void showOrderMenu(int menuIndex) {
@@ -73,14 +95,14 @@ public class InteractionManager {
     }
 
     public void showTargetMenuItem(MenuItem menuItem) {
-        String prefix = "선택한 메뉴: ";
+        String prefix = "선택한 메뉴\n";
         var menuItemInfo = Parser.parseMenuitemToString(menuItem);
         System.out.println(prefix + menuItemInfo);
     }
 
-    public void showPutInCart(MenuItem menuItem){
+    public void showPutInCart(MenuItem menuItem) {
         String suffix = "위 메뉴를 장바구니에 추가하시겠습니까?\n1. 확인\t2.취소\n";
-        var info = Parser.parseMenuitemToString(menuItem);
+        var info = " [ " + menuItem.getName() + " ] \n";
         System.out.println(info + suffix);
     }
 

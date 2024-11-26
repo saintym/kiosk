@@ -4,9 +4,7 @@ import menu.data.Menu;
 import menu.data.MenuItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MenuManager {
     private List<Menu> menu;

@@ -2,6 +2,7 @@ import menu.data.Menu;
 import menu.data.MenuItem;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Parser {
     public static String parseMenuToString(Menu menu) {
@@ -23,15 +24,8 @@ public class Parser {
     }
 
     public static String parseMenuNamesToString(List<Menu> menu) {
-        var builder = new StringBuilder();
-        int index = 1;
-        for (var item : menu) {
-            builder.append(index).append(". ")
-                    .append(item.getName().toUpperCase())
-                    .append("\n");
-            index++;
-        }
-
-        return builder.toString();
+        return menu.stream()
+                .map(item -> (menu.indexOf(item) + 1) + ". " + item.getName().toUpperCase())
+                .collect(Collectors.joining("\n")) + "\n";
     }
 }
