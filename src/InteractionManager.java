@@ -42,10 +42,10 @@ public class InteractionManager {
     public void showDiscountSelectMessage() {
         System.out.println("할인 정보를 입력해주세요\n");
 
-        for (int i = 0; i < DISCOUNT.values().length; i++) {
-            DISCOUNT discount = DISCOUNT.values()[i];
-            var name = discount.name();
-            var discountRate = (int) (discount.getDiscountRate() * 100);
+        for (int i = 0; i < DISCOUNT_TYPE.values().length; i++) {
+            DISCOUNT_TYPE discountTYPE = DISCOUNT_TYPE.values()[i];
+            var name = discountTYPE.name();
+            var discountRate = (int) (discountTYPE.getDiscountRate() * 100);
             System.out.println(i + ". " + name + " : " + discountRate + "%");
         }
     }
@@ -71,10 +71,21 @@ public class InteractionManager {
         });
 
         var priceTitle = "\n [ TOTAL ]\n W ";
-        var orderMenu = "\n\n1. 주문\n2. 메뉴 취소\n3. 메뉴판";
+
+        var orderMenuString = new StringBuilder("\n\n");
+        for (ORDER_MENU menu : ORDER_MENU.values()) {
+            if (menu == ORDER_MENU.NONE) {
+                continue;
+            }
+            orderMenuString.append(menu.getOrderMenu())
+                    .append(". ")
+                    .append(menu.getDisplayName())
+                    .append("\n");
+        }
+
         orderedItemsString.append(priceTitle)
                 .append(cart.calculateTotal())
-                .append(orderMenu);
+                .append(orderMenuString);
 
         System.out.println(orderedItemsString);
     }

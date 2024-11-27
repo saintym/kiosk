@@ -20,37 +20,12 @@ public class Kiosk {
             if (isExit(selectedMenuIndex))
                 return;
 
-            if (!cart.isEmpty() &&
-                    (isOrder(selectedMenuIndex) || isCancelOrder(selectedMenuIndex))) {
+            if (isCartMenuSelected(selectedMenuIndex)) {
                 if (isOrder(selectedMenuIndex)) {
-                    interactionManager.showMenuItemInCart(cart);
-                    var userSelected = interactionManager.read();
-                    switch (userSelected) {
-                        case 1 -> {
-                            interactionManager.showDiscountSelectMessage();
-                            var totalPrice = cart.calculateDiscountedPrice(interactionManager.read());
-                            if (totalPrice < 0) {
-                                interactionManager.showError();
-                                break;
-                            }
-                            interactionManager.showOrderDoneMessage(totalPrice);
-                            interactionManager.off();
-                            return;
-                        }
-                        case 2 -> {
-                            interactionManager.showMessage("취소할 메뉴의 번호를 입력해주세요 : ");
-                            if (!cart.removeItemByIndex(interactionManager.read()))
-                                interactionManager.showMessage("잘못된 명령입니다.\n");
-                        }
-                        case 3 -> {
-                        }
-                        default -> {
-                            interactionManager.showMessage("잘못된 명령입니다.\n");
-                            continue;
-                        }
-                    }
+                    handleOrderMenu();
                     continue;
-                } else if (isCancelOrder(selectedMenuIndex)) {
+                }
+                if (isCancelOrder(selectedMenuIndex)) {
                     interactionManager.showMessage("\n장바구니를 비웁니다.\n");
                     cart.clearCart();
                     continue;
@@ -58,8 +33,7 @@ public class Kiosk {
             }
 
             if (cart.isEmpty()) {
-                var a = menuManager.getAllMenu().size();
-                if (selectedMenuIndex > a) {
+                if (selectedMenuIndex > menuManager.getAllMenu().size()) {
                     interactionManager.showError();
                     continue;
                 }
@@ -119,8 +93,8 @@ public class Kiosk {
 
         var userSelected = interactionManager.read();
 
-        int maxOption = cart.isEmpty() ? allMenu.size() : allMenu.size() + 2;
-        if (userSelected < 0 || userSelected > maxOption) {
+        int maxOptionCount = cart.isEmpty() ? allMenu.size() : allMenu.size() + 2;
+        if (userSelected < 0 || userSelected > maxOptionCount) {
             interactionManager.showError();
             return promptMainMenu();
         }
@@ -133,6 +107,42 @@ public class Kiosk {
         return userSelected;
     }
 
+    private void handleOrderMenu() {
+        while (true) {
+            interactionManager.showMenuItemInCart(cart);
+
+            var userSelected = interactionManager.read();
+            var orderMenu = ORDER_MENU.values()[userSelected];
+
+            switch (orderMenu) {
+                case ORDER -> {
+                    interactionManager.showDiscountSelectMessage();
+                    var totalPrice = cart.calculateDiscountedPrice(interactionManager.read());
+                    if (totalPrice < 0) {
+                        interactionManager.showError();
+                        break;
+                    }
+                    interactionManager.showOrderDoneMessage(totalPrice);
+                    cart.clearCart();
+                    return;
+                }
+                case REMOVE_CART_ITEM -> {
+                    interactionManager.showMessage("취소할 메뉴의 번호를 입력해주세요 : ");
+                    if (!cart.removeItemByIndex(interactionManager.read()))
+                        interactionManager.showMessage("잘못된 명령입니다.\n");
+                    return;
+                }
+                case BACK_TO_MAIN -> { return; }
+                default -> interactionManager.showMessage("잘못된 명령입니다.\n");
+            }
+        }
+    }
+
+    private boolean isCartMenuSelected(int selected) {
+        return !cart.isEmpty() && (isOrder(selected) || isCancelOrder(selected));
+    }
+
+
     private boolean isOrder(int selected) {
         return selected == menuManager.getAllMenu().size() + 1;
     }
@@ -144,6 +154,4 @@ public class Kiosk {
     private boolean isExit(int index) {
         return index == -1;
     }
-
-
 }

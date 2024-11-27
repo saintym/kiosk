@@ -1,4 +1,4 @@
-public enum DISCOUNT {
+public enum DISCOUNT_TYPE {
     일반(0.0),
     군인(0.5),
     학생(0.6),
@@ -7,7 +7,7 @@ public enum DISCOUNT {
 
     private final double discountRate;
 
-    DISCOUNT(double discountRate) {
+    DISCOUNT_TYPE(double discountRate) {
         this.discountRate = discountRate;
     }
 

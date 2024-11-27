@@ -9,7 +9,6 @@ public class Menu {
     public String getName() {
         return this.name;
     }
-
     private List<MenuItem> menuItems = new ArrayList<>();
     public List<MenuItem> getMenuItems() {
         return menuItems;

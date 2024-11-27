@@ -34,17 +34,17 @@ public class Cart {
     }
 
     public int calculateDiscountedPrice(int type) {
-        DISCOUNT discountType;
+        DISCOUNT_TYPE discountTYPEType;
 
         try {
             if (type < 0)
                 return -1;
-            discountType = DISCOUNT.values()[type];
+            discountTYPEType = DISCOUNT_TYPE.values()[type];
         } catch (ArrayIndexOutOfBoundsException e) {
             return -1;
         }
 
-        double discountRate = discountType.getDiscountRate();
+        double discountRate = discountTYPEType.getDiscountRate();
 
         double total = calculateTotal();
         double discountedPrice = total * (1 - discountRate);
